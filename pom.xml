@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.4.5</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>fr.davidrobin</groupId>
 	<artifactId>dgs-skeleton</artifactId>
@@ -15,18 +14,20 @@
 	<description>Skeleton project for Netflix DGS </description>
 	<properties>
 		<java.version>11</java.version>
+		<dockerfile.maven.version>1.4.13</dockerfile.maven.version>
 		<dgs.framework.version>4.0.1</dgs.framework.version>
+		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
-		  <dependency>
-			<groupId>com.netflix.graphql.dgs</groupId>
-			<artifactId>graphql-dgs-platform-dependencies</artifactId>
-			<!-- The DGS BOM/platform dependency. This is the only place you set version of DGS -->
-			<version>${dgs.framework.version}</version>
-			<type>pom</type>
-			<scope>import</scope>
-		  </dependency>
+			<dependency>
+				<groupId>com.netflix.graphql.dgs</groupId>
+				<artifactId>graphql-dgs-platform-dependencies</artifactId>
+				<!-- The DGS BOM/platform dependency. This is the only place you set version of DGS -->
+				<version>${dgs.framework.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
@@ -39,28 +40,51 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		    <!-- DGS dependencies. We don't have to specify a version here! -->
-			<dependency>
-				<groupId>com.netflix.graphql.dgs</groupId>
-				<artifactId>graphql-dgs-spring-boot-starter</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>com.netflix.graphql.dgs</groupId>
-				<artifactId>graphql-dgs-subscriptions-websockets-autoconfigure</artifactId>
-			</dependency>
-			<!-- Additional Jackson dependency. We don't need to specify a version, because Jackson is part of the BOM/platform definition. -->
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-joda</artifactId>
-			</dependency>
+		<!-- DGS dependencies. We don't have to specify a version here! -->
+		<dependency>
+			<groupId>com.netflix.graphql.dgs</groupId>
+			<artifactId>graphql-dgs-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.netflix.graphql.dgs</groupId>
+			<artifactId>graphql-dgs-subscriptions-websockets-autoconfigure</artifactId>
+		</dependency>
+		<!-- Additional Jackson dependency. We don't need to specify a version, because Jackson is part of the BOM/platform definition. -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
+
 		<plugins>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>${dockerfile.maven.version}</version>
+				<executions>
+					<execution>
+						<id>default</id>
+						<goals>
+							<goal>build</goal>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<repository>muldos/dgs-skeleton</repository>
+					<tag>${project.version}</tag>
+					<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+					<buildArgs>
+						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+					</buildArgs>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
