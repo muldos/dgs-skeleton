@@ -1,8 +1,13 @@
 type Query {
     shows(titleFilter: String): [Show]
+    diagnosis: TechDetail
 }
 
 type Show {
     title: String
     releaseYear: Int
+}
+
+type TechDetail {
+    hostname: String
 }

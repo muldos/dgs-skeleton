@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>fr.davidrobin</groupId>
 	<artifactId>dgs-skeleton</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<name>DGS GraphQL Skeleton</name>
 	<description>Skeleton project for Netflix DGS </description>
 	<properties>
@@ -63,6 +63,11 @@
 	<build>
 
 		<plugins>
+			<!-- spring boot plugin must run before spotify plugin-->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
@@ -84,10 +89,6 @@
 						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
