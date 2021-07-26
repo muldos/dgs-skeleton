@@ -1,13 +1,21 @@
 type Query {
-    shows(titleFilter: String): [Show]
-    diagnosis: TechDetail
+  shows(titleFilter: String): [Show]
+  diagnosis: TechDetail
 }
 
+type Mutation {
+  addShow(input: ShowInput): Show
+}
+
+input ShowInput {
+  title: String
+  releaseYear: Int
+}
 type Show {
-    title: String
-    releaseYear: Int
+  title: String
+  releaseYear: Int
 }
 
 type TechDetail {
-    hostname: String
+  hostname: String
 }

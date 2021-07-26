@@ -1,4 +1,4 @@
-package fr.davidrobin.api.example;
+package fr.davidrobin.api.query;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,9 +14,10 @@ import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
 
+import fr.davidrobin.api.bean.Show;
+
 @DgsComponent
 public class ShowsDatafetcher {
-
 
     @DgsQuery
     public List<Show> shows(@InputArgument String titleFilter) {
@@ -40,10 +41,10 @@ public class ShowsDatafetcher {
         ObjectMapper objectMapper = new ObjectMapper();
         ClassLoader classLoader = getClass().getClassLoader();
         try {
-            InputStream inputStream = classLoader.getResourceAsStream("data/starwars-db.json");
+            InputStream inputStream = classLoader.getResourceAsStream("data/shows-db.json");
             InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             String showsJsonText = new BufferedReader(streamReader).lines().collect(Collectors.joining("\n"));
-            listShow =  objectMapper.readValue(showsJsonText, new TypeReference<List<Show>>() {
+            listShow = objectMapper.readValue(showsJsonText, new TypeReference<List<Show>>() {
             });
             return listShow;
         } catch (IOException e) {

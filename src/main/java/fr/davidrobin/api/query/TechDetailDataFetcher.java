@@ -1,10 +1,12 @@
-package fr.davidrobin.api.example;
+package fr.davidrobin.api.query;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsQuery;
+
+import fr.davidrobin.api.bean.TechDetail;
 
 @DgsComponent
 public class TechDetailDataFetcher {

@@ -9,9 +9,9 @@
 	</parent>
 	<groupId>fr.davidrobin</groupId>
 	<artifactId>dgs-skeleton</artifactId>
-	<version>1.3.0</version>
+	<version>1.4.0</version>
 	<name>DGS GraphQL Skeleton</name>
-	<description>Skeleton project for Netflix DGS </description>
+	<description>Skeleton project for Netflix DGS</description>
 	<properties>
 		<java.version>11</java.version>
 		<dockerfile.maven.version>1.4.13</dockerfile.maven.version>

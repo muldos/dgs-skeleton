@@ -1,4 +1,4 @@
-package fr.davidrobin.api.example;
+package fr.davidrobin.api.bean;
 
 public class TechDetail {
     private String hostname;
@@ -14,5 +14,5 @@ public class TechDetail {
     public void setHostname(String hostname) {
         this.hostname = hostname;
     }
-    
+
 }
