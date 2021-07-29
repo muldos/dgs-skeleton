@@ -6,4 +6,4 @@ ARG JAR_FILE
 ADD target/${JAR_FILE} /opt/app/japp.jar
 EXPOSE 8080 8443
 
-CMD ["java", "-jar", "/opt/app/japp.jar"]
+ENTRYPOINT ["java", "-jar", "/opt/app/japp.jar"]

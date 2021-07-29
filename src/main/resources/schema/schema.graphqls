@@ -18,4 +18,5 @@ type Show {
 
 type TechDetail {
   hostname: String
+  authEndpoint: String
 }
