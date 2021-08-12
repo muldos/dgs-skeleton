@@ -16,9 +16,17 @@ public class TechDetailDataFetcher {
     @Value("${SAMPLE_ENDPOINT_URL}")
     private String authEndpoint;
 
+    @Value("${app.pod.name}")
+    private String podName;
+
+    @Value("${app.pod.ip}")
+    private String podIp;
+
     @DgsQuery
     public TechDetail diagnosis() {
         TechDetail t = new TechDetail();
+        t.setPodIp(this.podIp);
+        t.setPodName(this.podName);
         try {
             t.setHostname(InetAddress.getLocalHost().getHostName());
             t.setAuthEndpoint(this.authEndpoint);
