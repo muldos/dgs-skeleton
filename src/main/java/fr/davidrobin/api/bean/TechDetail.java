@@ -5,6 +5,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class TechDetail {
     private String hostname;
+    private String podName;
+    private String podIp;
+
+    public String getPodName() {
+        return podName;
+    }
+
+    public void setPodName(String podName) {
+        this.podName = podName;
+    }
+
+    public String getPodIp() {
+        return podIp;
+    }
+
+    public void setPodIp(String podIp) {
+        this.podIp = podIp;
+    }
 
     private String authEndpoint;
 
