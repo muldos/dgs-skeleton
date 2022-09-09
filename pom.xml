@@ -82,7 +82,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<repository>muldos/dgs-skeleton</repository>
+					<repository>drobin.jfrog.io/myswamp/dgs-skeleton</repository>
 					<tag>${project.version}</tag>
 					<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
 					<buildArgs>
