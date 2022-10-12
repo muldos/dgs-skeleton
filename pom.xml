@@ -9,13 +9,12 @@
 	</parent>
 	<groupId>fr.davidrobin</groupId>
 	<artifactId>dgs-skeleton</artifactId>
-	<version>1.6.2</version>
+	<version>${env.JAR_VERSION}</version>
 	<name>DGS GraphQL Skeleton</name>
 	<description>Skeleton project for Netflix DGS</description>
 	<properties>
 		<java.version>11</java.version>
-		<dockerfile.maven.version>1.4.13</dockerfile.maven.version>
-		<dgs.framework.version>4.0.1</dgs.framework.version>
+		<dgs.framework.version>5.3.0</dgs.framework.version>
 		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
 	<dependencyManagement>
@@ -75,30 +74,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- docker image build will be done by github action
-				<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>${dockerfile.maven.version}</version>
-				<executions>
-					<execution>
-						<id>default</id>
-						<goals>
-							<goal>build</goal>
-							<goal>push</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<repository>drobin.jfrog.io/myswamp/dgs-skeleton</repository>
-					<tag>${project.version}</tag>
-					<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
-					<buildArgs>
-						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>
-				</configuration>
-			</plugin>
-		-->
 		</plugins>
 	</build>
 

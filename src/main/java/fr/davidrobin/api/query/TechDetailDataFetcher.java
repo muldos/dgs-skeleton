@@ -13,9 +13,6 @@ import fr.davidrobin.api.bean.TechDetail;
 @DgsComponent
 public class TechDetailDataFetcher {
 
-    @Value("${SAMPLE_ENDPOINT_URL}")
-    private String authEndpoint;
-
     @Value("${app.pod.name}")
     private String podName;
 
@@ -29,7 +26,6 @@ public class TechDetailDataFetcher {
         t.setPodName(this.podName);
         try {
             t.setHostname(InetAddress.getLocalHost().getHostName());
-            t.setAuthEndpoint(this.authEndpoint);
         } catch (UnknownHostException e) {
             t.setHostname("unknown with error");
         }
