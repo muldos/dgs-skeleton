@@ -10,10 +10,12 @@ type Mutation {
 
 input ShowInput {
   title: String
+  platform: String
   releaseYear: Int
 }
 type Show {
   title: String
+  platform: String
   releaseYear: Int
 }
 
@@ -25,7 +27,6 @@ type KubeAmbassador {
 
 type TechDetail {
   hostname: String
-  authEndpoint: String
   podIp: String
   podName: String
 }

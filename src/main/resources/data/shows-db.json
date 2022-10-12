@@ -1,27 +1,38 @@
 [
         {
+            "title":"The rings of power",
+            "platform": "amazon prime",
+            "releaseYear": 2022
+        },
+        {
             "title":"Stranger Things",
+            "platform": "netflix",
             "releaseYear": 2016
         },
         {
             "title":"Ozark",
+            "platform": "netflix",            
             "releaseYear": 2017
         },
         {
             "title":"The Crown",
+            "platform": "netflix",            
             "releaseYear": 2016
         },
         {
             "title":"Dead To Me",
+            "platform": "netflix",            
             "releaseYear": 2019
         },
         {
             "title":"Orange is the New Black",
+            "platform": "netflix",
             "releaseYear": 2013
         }
         ,
         {
             "title":"The 100",
+            "platform": "netflix",
             "releaseYear": 2014
         }
     ]

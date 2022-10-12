@@ -29,7 +29,7 @@ public class ShowMutation {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> input = dataFetchingEnvironment.getArgument("input");
         ShowInput showInput = new ObjectMapper().convertValue(input, ShowInput.class);
-        Show s = new Show(showInput.getTitle(), showInput.getReleaseYear());
+        Show s = new Show(showInput.getTitle(), showInput.getPlatform(), showInput.getReleaseYear());
         if (listShow == null) {
             listShow = new ArrayList<Show>();
         }
@@ -47,6 +47,7 @@ public class ShowMutation {
 class ShowInput {
     private String title;
     private int releaseYear;
+    private String platform;
 
     public String getTitle() {
         return title;
@@ -54,6 +55,14 @@ class ShowInput {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 
     public int getReleaseYear() {
