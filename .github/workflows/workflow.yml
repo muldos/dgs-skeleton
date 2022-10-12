@@ -1,0 +1,37 @@
+name: "github-petclinic-build"
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'corretto'        
+          cache: 'maven'
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ENV_1: ${{ secrets.JF_SECRET_ENV_1 }}
+      - name: Run Maven build
+        env:
+          MVN_VIRTUAL_REPO: default-maven-virtual
+          RT_DOCKER_HOST: drobin.jfrog.io
+          RT_DOCKER_REGISTRY: default-docker-virtual
+        run: |
+          # Collect environment variables for the build
+          #jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }} 
+          jf mvnc --repo-resolve-releases=${{ env.MVN_VIRTUAL_REPO }} \
+            --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
+            --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
+            --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
+          jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} spring-boot:repackage
+          #mv ./target/spring-petclinic-*.jar petclinic-${{github.run_id}}.jar 
+          #jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          # Publish build info
+          #jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          #jf scan petclinic-${{github.run_id}}.jar
