@@ -1,4 +1,4 @@
-name: "github-petclinic-build"
+name: "github-dgs-build"
 on: push
 
 jobs:
