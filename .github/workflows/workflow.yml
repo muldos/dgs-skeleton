@@ -35,8 +35,8 @@ jobs:
             --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} clean package
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
-          jf scan --watches=${{ env.SCAN_WATCHES }} ./target/dgs-skeleton-${{ env.JAR_VERSION }}.jar
-          # if scan is ok publish the JAR_VERSION:
-
+          jf scan --watches=${{ env.SCAN_WATCHES }} ./target/dgs-skeleton-${{ env.JAR_VERSION }}.jar --fail=false
+          # if scan is ok publish the jar
+          jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
