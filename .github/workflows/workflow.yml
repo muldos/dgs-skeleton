@@ -25,6 +25,7 @@ jobs:
           RT_DOCKER_HOST: drobin.jfrog.io
           RT_DOCKER_REGISTRY: default-docker-virtual
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          SCAN_WATCHES: webapp-watch
         run: |
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }} 
@@ -34,6 +35,8 @@ jobs:
             --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} clean package
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
-          jf scan ./target/dgs-skeleton-${{ env.JAR_VERSION }}.jar
+          jf scan --watches=${{ env.SCAN_WATCHES }} ./target/dgs-skeleton-${{ env.JAR_VERSION }}.jar
+          # if scan is ok publish the JAR_VERSION:
+
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
