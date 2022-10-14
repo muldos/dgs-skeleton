@@ -47,7 +47,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Run Maven build
         env:
-          MVN_VIRTUAL_REPO: ${{ github.event.inputs.mave-repo }}
+          MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
           RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           SCAN_WATCHES: ${{ github.event.inputs.docker-repo }}
