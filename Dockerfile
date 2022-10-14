@@ -1,4 +1,5 @@
-FROM adoptopenjdk:11-jre-hotspot
+ARG RT_REPO_PREFIX
+FROM ${RT_REPO_PREFIX}adoptopenjdk:11-jre-hotspot
 
 RUN mkdir /opt/app
 RUN mkdir /var/db_data
