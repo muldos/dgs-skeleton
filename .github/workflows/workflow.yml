@@ -17,7 +17,7 @@ on:
         type: string
         default: "default-docker-virtual"
         description: "Docker virtual repository"
-      jdp-host:
+      jpd-host:
         required: true
         type: string
         default: "drobin.jfrog.io"
@@ -50,7 +50,7 @@ jobs:
           MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
           RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
-          SCAN_WATCHES: ${{ github.event.inputs.docker-repo }}
+          SCAN_WATCHES: ${{ github.event.inputs.scan-watches }}
         run: |
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }} 
