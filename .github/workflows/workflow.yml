@@ -45,6 +45,8 @@ jobs:
           JF_ENV_1: ${{ secrets.JF_SECRET_ENV_1 }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
+        with:
+          platforms: "linux/amd64,linux/arm64"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Run Maven build
@@ -68,6 +70,14 @@ jobs:
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          -
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/dgsplatform:1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
       - name: Build and push Docker image
         env:
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
