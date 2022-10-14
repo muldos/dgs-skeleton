@@ -61,6 +61,7 @@ jobs:
             --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} clean package
+          # collect vcs info
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
           jf scan --watches=${{ env.SCAN_WATCHES }} ./target/dgs-skeleton-${{ env.JAR_VERSION }}.jar --fail=false
           # if scan is ok publish the jar
@@ -73,6 +74,12 @@ jobs:
           RT_DOCKER_HOST: ${{ github.event.inputs.jpd-host }}
           RT_REPO_PREFIX: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/
         run: |
+          # Collect environment variables for the build
+          jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
+          # collect vcs info
+          jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           jf docker build --build-arg JAR_FILE_NAME=dgs-skeleton-$JAR_VERSION.jar --build-arg RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }} -t ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION .
           jf docker push ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION
+          # Publish build info
+          jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
 
