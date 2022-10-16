@@ -70,6 +70,12 @@ jobs:
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
+      - name: Login to Artifactory Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ github.event.inputs.jpd-host }}
+          username: ${{ secrets.JF_LOGIN }}
+          password: ${{ secrets.JF_PWD }}
       - name: Build and push
         env: 
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
@@ -78,7 +84,9 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          push: false
+          push: true
+          outputs: |
+            type=image
           build-args: |
             JAR_FILE_NAME=dgs-skeleton-${{ env.JAR_VERSION }}.jar
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
@@ -89,12 +97,13 @@ jobs:
           RT_DOCKER_HOST: ${{ github.event.inputs.jpd-host }}
           RT_REPO_PREFIX: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/
         run: |
+          docker info
           # Collect environment variables for the build
-          jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
+          #jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           # collect vcs info
-          jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          #jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           #jf docker build --build-arg JAR_FILE_NAME=dgs-skeleton-$JAR_VERSION.jar --build-arg RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }} -t ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION .
-          jf docker push ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION
+          #jf docker push ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION
           # Publish build info
-          jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          #jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
 
