@@ -71,6 +71,9 @@ jobs:
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
       - name: Build and push
+        env: 
+          JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          RT_REPO_PREFIX: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -79,7 +82,7 @@ jobs:
           build-args: |
             JAR_FILE_NAME=dgs-skeleton-$JAR_VERSION.jar
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
-          tags: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/dgs-graphql:1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          tags: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/dgs-graphql:${{ env.JAR_VERSION }}
       - name: Build and push Docker image
         env:
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
