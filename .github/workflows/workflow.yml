@@ -80,7 +80,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: false
           build-args: |
-            JAR_FILE_NAME=dgs-skeleton-$JAR_VERSION.jar
+            JAR_FILE_NAME=dgs-skeleton-${{ env.JAR_VERSION }}.jar
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
           tags: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/dgs-graphql:${{ env.JAR_VERSION }}
       - name: Build and push Docker image
