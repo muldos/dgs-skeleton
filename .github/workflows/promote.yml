@@ -35,5 +35,5 @@ jobs:
       - name: Promote build
         run: |
           # Promote the docker image
-          jf rt bpr ${{ github.event.inputs.build-name }} ${{ github.event.inputs.build-number }} ${{ github.event.inputs.target-docker-repo }} --comment="promoted by github action CI" --status="${{ github.event.inputs.target-status }}"
+          jf rt bpr ${{ github.event.inputs.build-name }} ${{ github.event.inputs.build-number }} ${{ github.event.inputs.target-docker-repo }} --comment="promoted by github action CI" --status="${{ github.event.inputs.status }}"
  
