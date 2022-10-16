@@ -76,7 +76,7 @@ jobs:
           registry: ${{ github.event.inputs.jpd-host }}
           username: ${{ secrets.JF_LOGIN }}
           password: ${{ secrets.JF_PWD }}
-      - name: Build and push
+      - name: Build and push docker images
         env: 
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           RT_REPO_PREFIX: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/
@@ -90,14 +90,14 @@ jobs:
           build-args: |
             JAR_FILE_NAME=dgs-skeleton-${{ env.JAR_VERSION }}.jar
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
-          tags: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/dgs-graphql:${{ env.JAR_VERSION }}
-      - name: Build and push Docker image
+          tags: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.JAR_VERSION }}
+      - name: Scan, build info and promote images
         env:
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           RT_DOCKER_HOST: ${{ github.event.inputs.jpd-host }}
           RT_REPO_PREFIX: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/
         run: |
-          docker info
+          cat image-file-details
           # Collect environment variables for the build
           #jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           # collect vcs info
