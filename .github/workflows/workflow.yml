@@ -76,7 +76,10 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: false
-          tags: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/dgsplatform:1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          build-args: |
+            JAR_FILE_NAME=dgs-skeleton-$JAR_VERSION.jar
+            RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
+          tags: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/dgs-graphql:1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
       - name: Build and push Docker image
         env:
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
@@ -87,7 +90,7 @@ jobs:
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           # collect vcs info
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
-          jf docker build --build-arg JAR_FILE_NAME=dgs-skeleton-$JAR_VERSION.jar --build-arg RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }} -t ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION .
+          #jf docker build --build-arg JAR_FILE_NAME=dgs-skeleton-$JAR_VERSION.jar --build-arg RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }} -t ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION .
           jf docker push ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
