@@ -30,6 +30,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Here we install all the tools : docker buildx, QEMU, JDK 11, JFrog CLI
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -49,6 +50,7 @@ jobs:
           platforms: "linux/amd64,linux/arm64"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+        # We build & test the JAR file, scan it and if scan result ok, we publish it to our artifactory maven repository
       - name: Run Maven build
         env:
           MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
@@ -70,6 +72,10 @@ jobs:
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
+      # Now multi arch docker build for our maven application
+      # JFrog docker multi arch resources : 
+      # https://jfrog.com/blog/the-more-the-merrier-multi-arch-docker-manifests-with-buildx-and-artifactory/
+      # https://jfrog.com/knowledge-base/artifactory-how-to-use-jfrog-cli-to-add-build-info-to-images-built-with-docker-buildx/
       - name: Login to Artifactory Container Registry
         uses: docker/login-action@v2
         with:
@@ -81,6 +87,7 @@ jobs:
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           RT_REPO_PREFIX: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/
         uses: docker/build-push-action@v3
+        id: docker_build
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -97,13 +104,16 @@ jobs:
           RT_DOCKER_HOST: ${{ github.event.inputs.jpd-host }}
           RT_REPO_PREFIX: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/
         run: |
-          cat image-file-details
+          echo ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.JAR_VERSION }}@${{ steps.docker_build.outputs.ImageID }} > ./image-file-details.txt
           # Collect environment variables for the build
-          #jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
+          jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           # collect vcs info
-          #jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          # As the docker images have been built by buildx, we don't have them locally, 
+          # so we link the build info to the already published image in previous step
+          jf rt bdc default-docker-local --image-file ./image-file-details.txt --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
           #jf docker build --build-arg JAR_FILE_NAME=dgs-skeleton-$JAR_VERSION.jar --build-arg RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }} -t ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION .
           #jf docker push ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION
           # Publish build info
-          #jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
 
