@@ -1,0 +1,39 @@
+name: "github-dgs-promote"
+on: 
+  workflow_dispatch:
+    inputs:
+      status:
+        required: true
+        type: string
+        default: "staging following successfull scan"
+        description: "The promotion status"
+      build-number:
+        required: true
+        type: string
+        default: "1"
+        description: "The build number"        
+      build-name:
+        required: true
+        type: string
+        default: "github-dgs-build-docker"
+        description: "The build name"            
+      target-docker-repo:
+        required: true
+        type: string
+        default: "default-docker-staging-local"
+        description: "Docker promote target repository"     
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # We install all the JFrog CLI
+    steps:
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ENV_1: ${{ secrets.JF_SECRET_ENV_1 }}    
+      # Promote step
+      - name: Promote build
+        run: |
+          # Promote the docker image
+          jf rt bpr ${{ github.event.inputs.build-name }} ${{ github.event.inputs.build-number }} ${{ github.event.inputs.target-docker-repo }} --comment="promoted by github action CI" --status="${{ github.event.inputs.target-status }}"
+ 

@@ -98,7 +98,7 @@ jobs:
             JAR_FILE_NAME=dgs-skeleton-${{ env.JAR_VERSION }}.jar
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
           tags: ${{ github.event.inputs.jpd-host }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.JAR_VERSION }}
-      - name: Scan, build info and promote images
+      - name: Scan & push Docker build info
         env:
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           RT_DOCKER_HOST: ${{ github.event.inputs.jpd-host }}
