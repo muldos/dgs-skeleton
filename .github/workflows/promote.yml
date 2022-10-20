@@ -2,6 +2,13 @@ name: "github-dgs-promote"
 on: 
   workflow_dispatch:
     inputs:
+      env-number:
+        required: true
+        type: choice
+        options:
+        - '1'
+        - '2'
+        description: "Environment to use (1 EKS / 2 SaaS)"
       status:
         required: true
         type: string
@@ -30,7 +37,7 @@ jobs:
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ENV_1: ${{ secrets.JF_SECRET_ENV_1 }}    
+          JF_ENV_1: ${{ secrets[format('JF_SECRET_ENV_{0}', github.event.inputs.env-number)] }}    
       # Promote step
       - name: Promote build
         run: |
