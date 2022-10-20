@@ -14,7 +14,6 @@
 	<description>Skeleton project for Netflix DGS</description>
 	<properties>
 		<java.version>11</java.version>
-		<dgs.framework.version>5.3.0</dgs.framework.version>
 		<maven.deploy.skip>true</maven.deploy.skip>
 	</properties>
 	<dependencyManagement>
@@ -23,46 +22,34 @@
 				<groupId>com.netflix.graphql.dgs</groupId>
 				<artifactId>graphql-dgs-platform-dependencies</artifactId>
 				<!-- The DGS BOM/platform dependency. This is the only place you set version of DGS -->
-				<version>${dgs.framework.version}</version>
+				<version>5.3.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- DGS dependencies. We don't have to specify a version here! -->
+	
 		<dependency>
 			<groupId>com.netflix.graphql.dgs</groupId>
 			<artifactId>graphql-dgs-spring-boot-starter</artifactId>
 		</dependency>
+	
 		<dependency>
-			<groupId>com.netflix.graphql.dgs</groupId>
-			<artifactId>graphql-dgs-subscriptions-websockets-autoconfigure</artifactId>
-		</dependency>
-		<!-- Additional Jackson dependency. We don't need to specify a version, because Jackson is part of the BOM/platform definition. -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-joda</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
 
 		<plugins>
-			<!-- spring boot plugin must run before spotify plugin-->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

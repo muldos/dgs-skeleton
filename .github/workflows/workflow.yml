@@ -86,7 +86,7 @@ jobs:
       - name: Login to Artifactory Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ github.event.inputs.jpd-host }}
+          registry: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
           username: ${{ secrets[format('JF_LOGIN_{0}', github.event.inputs.env-number)] }}
           password: ${{ secrets[format('JF_PWD_{0}', github.event.inputs.env-number)] }}
       - name: Build and push docker images

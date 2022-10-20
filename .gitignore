@@ -17,6 +17,8 @@ target/
 *.iws
 *.iml
 *.ipr
+### Jfrog CLI ###
+.jfrog/
 
 ### NetBeans ###
 /nbproject/private/
