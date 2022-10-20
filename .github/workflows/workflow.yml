@@ -118,7 +118,7 @@ jobs:
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # As the docker images have been built by buildx, we don't have them locally, 
           # so we link the build info to the already published image in previous step
-          jf rt bdc default-docker-local --image-file ./image-file-details.txt --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          jf rt bdc ${{ github.event.inputs.docker-repo }} --image-file ./image-file-details.txt --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
           #jf docker build --build-arg JAR_FILE_NAME=dgs-skeleton-$JAR_VERSION.jar --build-arg RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }} -t ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION .
           #jf docker push ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION
           # Publish build info
