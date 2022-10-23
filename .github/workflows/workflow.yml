@@ -9,11 +9,16 @@ on:
         - '1'
         - '2'
         description: "Environment to use (1 EKS / 2 SaaS)"
-      fail-scan:
+      fail-scan1:
         required: true
         type: boolean
         default: false
-        description: "If true, will fail the build if watches violations are found"
+        description: "If true, will fail the build if watches violations are found during mvn scan"
+      fail-scan2:
+        required: true
+        type: boolean
+        default: false
+        description: "If true, will fail the build if watches violations are found during build scan"
       maven-repo:
         required: true
         type: string
@@ -70,7 +75,7 @@ jobs:
           # collect vcs info
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Xray on demand scan example
-          jf scan --watches=${{ env.SCAN_WATCHES }} ./target/dgs-skeleton-${{ env.JAR_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan }}
+          jf scan --watches=${{ env.SCAN_WATCHES }} ./target/dgs-skeleton-${{ env.JAR_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
           # if scan is ok publish the jar
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
           # Publish build info
@@ -120,5 +125,5 @@ jobs:
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Xray build scan example
-          jf bs --fail=false ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          jf bs --fail=${{ github.event.inputs.fail-scan2 }} ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
 
