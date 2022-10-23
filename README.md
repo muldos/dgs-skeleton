@@ -1,5 +1,7 @@
 # DGS (from Netflix) skeleton project
 
+[![github-dgs-build](https://github.com/muldos/dgs-skeleton/actions/workflows/workflow.yml/badge.svg)](https://github.com/muldos/dgs-skeleton/actions/workflows/workflow.yml)
+
 ## Introduction
 
 Run the project locally (outside docker): 
