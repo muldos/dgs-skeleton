@@ -34,7 +34,12 @@ on:
         required: true
         type: string
         default: "webapp-watch"
-        description: "The watches to use for the docker images scan(comma separated)"            
+        description: "The watches to use for the docker images scan(comma separated)"      
+      project-key:
+        required: false
+        type: string
+        default: ""
+        description: "Jfrog project's key"      
 jobs:
   build:
     runs-on: ubuntu-latest
