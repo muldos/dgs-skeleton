@@ -31,7 +31,7 @@ on:
         default: "default-docker-virtual"
         description: "Docker virtual repository"
       scan-option:
-        required: true
+        required: false
         type: string
         default: "--watches=webapp-watch"
         description: "The watches or project option to use for the various CLI scan"      
