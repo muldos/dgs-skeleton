@@ -8,6 +8,7 @@ on:
         options:
         - '1'
         - '2'
+        - '3'
         description: "Environment to use (1 EKS / 2 SaaS)"
       fail-scan1:
         required: true
@@ -64,6 +65,7 @@ jobs:
           RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           SCAN_WATCHES: ${{ github.event.inputs.scan-watches }}
+          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
         run: |
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }} 
@@ -93,6 +95,7 @@ jobs:
       - name: Build and push docker images
         env: 
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
           RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
         uses: docker/build-push-action@v3
         id: docker_build
@@ -109,6 +112,7 @@ jobs:
       - name: Scan & push Docker build info
         env:
           JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
           RT_DOCKER_HOST: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
           RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
         run: |
