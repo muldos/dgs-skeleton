@@ -9,7 +9,7 @@ on:
         - '1'
         - '2'
         - '3'
-        description: "Environment to use (1 EKS / 2 SaaS)"
+        description: "Environment to use (1 EKS / 2 SaaS / Soleng)"
       fail-scan1:
         required: true
         type: boolean
