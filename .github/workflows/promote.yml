@@ -8,7 +8,8 @@ on:
         options:
         - '1'
         - '2'
-        description: "Environment to use (1 EKS / 2 SaaS)"
+        - '3'
+        description: "Environment to use (1 EKS / 2 SaaS / Soleng)"
       status:
         required: true
         type: string
@@ -28,7 +29,12 @@ on:
         required: true
         type: string
         default: "default-docker-staging-local"
-        description: "Docker promote target repository"     
+        description: "Docker promote target repository"    
+      project-key:
+        required: false
+        type: string
+        default: "dro"
+        description: "Jfrog project's key"             
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -37,6 +43,7 @@ jobs:
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v2
         env:
+          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
           JF_ENV_1: ${{ secrets[format('JF_SECRET_ENV_{0}', github.event.inputs.env-number)] }}    
       # Promote step
       - name: Promote build
