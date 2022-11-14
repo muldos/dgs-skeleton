@@ -1,10 +1,12 @@
 package fr.davidrobin.api.controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import fr.davidrobin.api.bean.EvalBean;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UnsafeController {
-    @GetMapping("/vulnerable-path")
-    public String VulnerablePath(){
-        return "Hello, I'm a vulnerability";
+    @RequestMapping("/vulnerable-path")
+    public String VulnerablePath(EvalBean evalBean){
+        
+        return "Hello, I'm a vulnerability : " + evalBean;
     }
 }
