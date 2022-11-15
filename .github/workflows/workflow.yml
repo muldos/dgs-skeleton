@@ -163,9 +163,8 @@ jobs:
           RT_DOCKER_HOST: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
           RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
         run: |
-          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.ImageID }} > ./image-file-details.txt
-          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql-tomcat:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.ImageID }} >> ./image-file-details.txt
-          cat ./image-file-details.txt
+          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.PKG_VERSION }}@${{ steps.docker_build_1.outputs.ImageID }} > ./image-file-details.txt
+          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql-tomcat:${{ env.PKG_VERSION }}@${{ steps.docker_build_2.outputs.ImageID }} >> ./image-file-details.txt
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           # collect vcs info
