@@ -76,7 +76,6 @@ jobs:
           SCAN_OPTION: --${{ github.event.inputs.scan-mode }}=${{ github.event.inputs.scan-context }}
           MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
           RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
-          PKG_TYPE: jar
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
         run: |
@@ -86,14 +85,14 @@ jobs:
             --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
-          jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} clean package
+          jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} -Dpackaging=jar -Dmaven.test.skip=true clean package
           # collect vcs info
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Xray on demand scan example
           jf scan ${{ env.SCAN_OPTION }} ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
           #jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
           # if scan is ok publish the jar
-          jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
+          jf mvn -Dmaven.test.skip=true --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
          
@@ -136,7 +135,7 @@ jobs:
             --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
-          jf mvn clean package
+          jf mvn -Dpackaging=war -Dmaven.test.skip=true clean package 
       - name: Build and push docker tomcat + war based docker images
         env: 
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
