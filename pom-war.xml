@@ -8,7 +8,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>fr.davidrobin</groupId>
-	<artifactId>dgs-skeleton</artifactId>
+	<artifactId>dgs-skeleton-webapp</artifactId>
 	<packaging>war</packaging>
 	<version>${revision}</version>
 	<name>DGS GraphQL Skeleton</name>
