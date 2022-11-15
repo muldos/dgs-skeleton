@@ -131,11 +131,16 @@ jobs:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
         run: |
           # Collect environment variables for the build
+          jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-war ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           jf mvnc --repo-resolve-releases=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
-          jf mvn -f pom-war.xml -Dmaven.test.skip=true clean package 
+          jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-war ${{ env.JFROG_CLI_BUILD_NUMBER }} 
+          jf mvn -f pom-war.xml -Dmaven.test.skip=true clean package
+          jf mvn -f pom-war.xml -Dmaven.test.skip=true --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-war --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
+          # Publish build info
+          jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-war ${{ env.JFROG_CLI_BUILD_NUMBER }}
       - name: Build and push docker tomcat + war based docker images
         env: 
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
