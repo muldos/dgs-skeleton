@@ -9,7 +9,8 @@
 	</parent>
 	<groupId>fr.davidrobin</groupId>
 	<artifactId>dgs-skeleton</artifactId>
-	<version>${env.JAR_VERSION}</version>
+	<packaging>${env.PKG_TYPE}</packaging>
+	<version>${env.PKG_VERSION}</version>
 	<name>DGS GraphQL Skeleton</name>
 	<description>Skeleton project for Netflix DGS</description>
 	<properties>
@@ -28,27 +29,22 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-	
 		<dependency>
 			<groupId>com.netflix.graphql.dgs</groupId>
 			<artifactId>graphql-dgs-spring-boot-starter</artifactId>
 		</dependency>
-	
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
-
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -63,5 +59,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

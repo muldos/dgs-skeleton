@@ -1,0 +1,6 @@
+FROM tomcat:9.0.60-jdk11-openjdk
+
+ARG WAR_FILE_NAME
+ADD target/${WAR_FILE_NAME} /usr/local/tomcat/webapps/jfrog-demo.war
+EXPOSE 8080
+CMD ["catalina.sh", "run"]

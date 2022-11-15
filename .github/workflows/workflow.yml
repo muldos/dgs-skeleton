@@ -41,7 +41,7 @@ on:
         required: false
         type: string
         default: "webapp-watch"
-        description: "The watches or project key to use for the jar scan (for 'watches' its comma separated)"      
+        description: "The watches list or the project key to use for the jar scan (for 'watches' its comma separated)"      
       project-key:
         required: false
         type: string
@@ -71,12 +71,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         # We build & test the JAR file, scan it and if scan result ok, we publish it to our artifactory maven repository
-      - name: Run Maven build
+      - name: Run Maven JAR build 
         env:
           SCAN_OPTION: --${{ github.event.inputs.scan-mode }}=${{ github.event.inputs.scan-context }}
           MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
           RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
-          JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          PKG_TYPE: jar
+          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
         run: |
           # Collect environment variables for the build
@@ -89,14 +90,13 @@ jobs:
           # collect vcs info
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Xray on demand scan example
-          jf scan ${{ env.SCAN_OPTION }} ./target/dgs-skeleton-${{ env.JAR_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
-          #jf scan ./target/dgs-skeleton-${{ env.JAR_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
+          jf scan ${{ env.SCAN_OPTION }} ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
+          #jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
           # if scan is ok publish the jar
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
          
-           
       # Now multi arch docker build for our maven application
       # JFrog docker multi arch resources : 
       # https://jfrog.com/blog/the-more-the-merrier-multi-arch-docker-manifests-with-buildx-and-artifactory/
@@ -107,9 +107,9 @@ jobs:
           registry: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
           username: ${{ secrets[format('JF_LOGIN_{0}', github.event.inputs.env-number)] }}
           password: ${{ secrets[format('JF_PWD_{0}', github.event.inputs.env-number)] }}
-      - name: Build and push docker images
+      - name: Build and push docker SpringBoot's jar based docker images
         env: 
-          JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
           RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
         uses: docker/build-push-action@v3
@@ -121,17 +121,50 @@ jobs:
           outputs: |
             type=image
           build-args: |
-            JAR_FILE_NAME=dgs-skeleton-${{ env.JAR_VERSION }}.jar
+            JAR_FILE_NAME=dgs-skeleton-${{ env.PKG_VERSION }}.${{ env.PKG_TYPE }}
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
-          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.JAR_VERSION }}
+          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.PKG_VERSION }}
+      - name: Run Maven WAR build 
+        env:
+          MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
+          RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
+          PKG_TYPE: war
+          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+        run: |
+          # Collect environment variables for the build
+          jf mvnc --repo-resolve-releases=${{ env.MVN_VIRTUAL_REPO }} \
+            --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
+            --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
+            --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
+          jf mvn clean package
+      - name: Build and push docker tomcat + war based docker images
+        env: 
+          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
+          RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
+        uses: docker/build-push-action@v3
+        id: docker_build
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          file: ./DockerfileTomcat
+          push: true
+          outputs: |
+            type=image
+          build-args: |
+            WAR_FILE_NAME=dgs-skeleton-${{ env.PKG_VERSION }}.war
+            RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
+          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql-tomcat:${{ env.PKG_VERSION }}
+          
       - name: Scan & push Docker build info
         env:
-          JAR_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
           RT_DOCKER_HOST: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
           RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
         run: |
-          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.JAR_VERSION }}@${{ steps.docker_build.outputs.ImageID }} > ./image-file-details.txt
+          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.ImageID }} > ./image-file-details.txt
+          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql-tomcat:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.ImageID }} >> ./image-file-details.txt
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           # collect vcs info
@@ -139,8 +172,8 @@ jobs:
           # As the docker images have been built by buildx, we don't have them locally, 
           # so we link the build info to the already published image in previous step
           jf rt bdc ${{ github.event.inputs.docker-repo }} --image-file ./image-file-details.txt --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
-          #jf docker build --build-arg JAR_FILE_NAME=dgs-skeleton-$JAR_VERSION.jar --build-arg RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }} -t ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION .
-          #jf docker push ${{ env.RT_REPO_PREFIX }}dgs-graphql:$JAR_VERSION
+          #jf docker build --build-arg JAR_FILE_NAME=dgs-skeleton-$PKG_VERSION.jar --build-arg RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }} -t ${{ env.RT_REPO_PREFIX }}dgs-graphql:$PKG_VERSION .
+          #jf docker push ${{ env.RT_REPO_PREFIX }}dgs-graphql:$PKG_VERSION
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Xray build scan example
