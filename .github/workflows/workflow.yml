@@ -85,7 +85,7 @@ jobs:
             --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
-          jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} -Dpackaging.type=jar -Dmaven.test.skip=true clean package
+          jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} -Dmaven.test.skip=true clean package
           # collect vcs info
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Xray on demand scan example
@@ -135,7 +135,7 @@ jobs:
             --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
-          jf mvn -Dpackaging.type=war -Dmaven.test.skip=true clean package 
+          jf mvn -f pom-war.xml -Dmaven.test.skip=true clean package 
       - name: Build and push docker tomcat + war based docker images
         env: 
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0

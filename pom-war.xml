@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>fr.davidrobin</groupId>
 	<artifactId>dgs-skeleton</artifactId>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<version>${env.PKG_VERSION}</version>
 	<name>DGS GraphQL Skeleton</name>
 	<description>Skeleton project for Netflix DGS</description>
