@@ -23,24 +23,24 @@ on:
       maven-repo:
         required: true
         type: string
-        default: "default-maven-virtual"
+        default: "dro-backend-maven-virtual"
         description: "Maven virtual repository"
       docker-repo:
         required: true
         type: string
-        default: "default-docker-virtual"
+        default: "dro-backend-docker-dev-virtual"
         description: "Docker virtual repository"
       scan-mode:
         required: true
         type: choice
         options:
-        - 'watches'
         - 'project'
+        - 'watches'
         description: "scan mode to use for the maven jar "
       scan-context:
         required: false
         type: string
-        default: "webapp-watch"
+        default: "dro"
         description: "The watches list or the project key to use for the jar scan (for 'watches' its comma separated)"      
       project-key:
         required: false
