@@ -10,7 +10,7 @@
 	<groupId>fr.davidrobin</groupId>
 	<artifactId>dgs-skeleton</artifactId>
 	<packaging>jar</packaging>
-	<version>${env.PKG_VERSION}</version>
+	<version>${revision}</version>
 	<name>DGS GraphQL Skeleton</name>
 	<description>Skeleton project for Netflix DGS</description>
 	<properties>
