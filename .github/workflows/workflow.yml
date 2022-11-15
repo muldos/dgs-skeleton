@@ -156,7 +156,7 @@ jobs:
           outputs: |
             type=image
           build-args: |
-            WAR_FILE_NAME=dgs-skeleton-${{ env.PKG_VERSION }}.war
+            WAR_FILE_NAME=dgs-skeleton-webapp-${{ env.PKG_VERSION }}.war
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
           tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql-tomcat:${{ env.PKG_VERSION }}
           
