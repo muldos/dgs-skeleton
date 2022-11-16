@@ -9,11 +9,11 @@ on:
         - '1'
         - '2'
         - '3'
-        description: "Environment to use (1 EKS / 2 SaaS / Soleng)"
+        description: "Environment to use (1 EKS / 2 SaaS / 3 Soleng)"
       status:
         required: true
         type: string
-        default: "staging following successfull scan"
+        default: "promoted following successfull scan and QA tests"
         description: "The promotion status"
       build-number:
         required: true
@@ -28,8 +28,8 @@ on:
       target-docker-repo:
         required: true
         type: string
-        default: "default-docker-staging-local"
-        description: "Docker promote target repository"    
+        default: "dro-backend-docker-prod-local"
+        description: "The target repository for Docker promotion"    
       project-cli-option:
         required: false
         type: string
