@@ -90,6 +90,7 @@ jobs:
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} -Dmaven.test.skip=true clean package
           # collect vcs info
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          echo 'running xray on demand scan'
           # Xray on demand scan example
           jf scan ${{ env.SCAN_OPTION }} ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
           #jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
