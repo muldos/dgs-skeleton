@@ -83,10 +83,11 @@ jobs:
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           echo '== mvn config =='
-          jf mvnc -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 --repo-resolve-releases=${{ env.MVN_VIRTUAL_REPO }} \
+          jf mvnc --repo-resolve-releases=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
+          echo '== maven jar build =='
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} -Dmaven.test.skip=true clean package
           # collect vcs info
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
