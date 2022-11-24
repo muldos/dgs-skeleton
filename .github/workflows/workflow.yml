@@ -92,7 +92,7 @@ jobs:
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
           echo 'running xray on demand scan'
           # Xray on demand scan example
-          jf scan ${{ env.SCAN_OPTION }} ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
+          #jf scan ${{ env.SCAN_OPTION }} ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
           #jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
           # if scan is ok publish the jar
           jf mvn -Dmaven.test.skip=true -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
