@@ -184,5 +184,5 @@ jobs:
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Xray build scan example
-          jf bs --fail=${{ github.event.inputs.fail-scan2 }} ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          #jf bs --fail=${{ github.event.inputs.fail-scan2 }} ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
 
