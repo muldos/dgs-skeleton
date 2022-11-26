@@ -18,6 +18,6 @@ public class UnsafeController {
     @GetMapping("/vulnerable-path")
     public String VulnerablePath() {
 
-        return "Hello, I'm a vulnerability : " ;
+        return "Hello, I'm not anymore a vulnerability !" ;
     }
 }
