@@ -2,6 +2,7 @@ FROM tomcat:9.0.60-jdk11-openjdk
 
 ARG WAR_FILE_NAME
 ADD target/${WAR_FILE_NAME} /usr/local/tomcat/webapps/jfrog-demo.war
-RUN mkdir /root/.aws/ && printf  '[default]\n' >> /root/.aws/credentials && printf  'aws_access_key_id=ASI123456YRY\n' >> /root/.aws/credentials && printf 'aws_secret_access_key=5pwY0abcd1234K4\n' >> /root/.aws/credentials
+RUN mkdir /root/.aws/ 
+ADD fake-creds.txt /root/.aws/credentials
 EXPOSE 8080
 CMD ["catalina.sh", "run"]
