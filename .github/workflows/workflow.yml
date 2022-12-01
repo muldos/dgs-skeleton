@@ -91,10 +91,26 @@ jobs:
           jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} -Dmaven.test.skip=true clean package
           # collect vcs info
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
+      - name: Xray on-demand scan of JAR 
+        env:
+          SCAN_OPTION: --${{ github.event.inputs.scan-mode }}=${{ github.event.inputs.scan-context }}
+          MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
+          RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
+          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
+        run: |          
           echo 'running xray on demand scan'
           # Xray on demand scan example
-          #jf scan ${{ env.SCAN_OPTION }} ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
-          jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
+          jf scan ${{ env.SCAN_OPTION }} ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
+          #jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
+      - name: Publish JAR & Build Info 
+        env:
+          SCAN_OPTION: --${{ github.event.inputs.scan-mode }}=${{ github.event.inputs.scan-context }}
+          MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
+          RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
+          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
+        run: |          
           # if scan is ok publish the jar
           jf mvn -Dmaven.test.skip=true -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
           # Publish build info
@@ -185,5 +201,5 @@ jobs:
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Xray build scan example
-          #jf bs --fail=${{ github.event.inputs.fail-scan2 }} ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          jf bs --fail=${{ github.event.inputs.fail-scan2 }} ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
 
