@@ -1,0 +1,16 @@
+{
+    "files": [
+        {
+            "aql": {
+                "items.find" : {
+                    "$and": [
+                        {"repo" : "${dockerRepo}"},
+                        {"path": {"$match" : "${imgPrefix}/*"}},
+                        {"@build.name": "${buildName}"},
+                        {"@build.number": "${buildNumber}"}
+                    ]
+                }
+              }
+        }
+    ]
+}

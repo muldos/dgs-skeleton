@@ -210,9 +210,5 @@ jobs:
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Xray build scan example
           jf bs --fail=${{ github.event.inputs.fail-scan2 }} ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
-<<<<<<< HEAD
           # Tag release with extra properties
           jf rt sp "drobundle.status=ok;drobundle.version=1.${{ env.JFROG_CLI_BUILD_NUMBER }}" --spec tagspecs.json --spec-vars="dockerRepo=${{ github.event.inputs.docker-repo }};imgPrefix=multiarch/${{ github.event.inputs.img-prefix }}-dgs;buildName=${{ env.JFROG_CLI_BUILD_NAME }}-docker;buildNumber=${{ env.JFROG_CLI_BUILD_NUMBER }}"
-=======
->>>>>>> c4ac3c3 (add full scan and more steps to ease demos)
-
