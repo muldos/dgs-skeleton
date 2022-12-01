@@ -101,8 +101,7 @@ jobs:
         run: |          
           echo 'running xray on demand scan'
           # Xray on demand scan example
-          jf scan ${{ env.SCAN_OPTION }} ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
-          #jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
+          jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
       - name: Publish JAR & Build Info 
         env:
           SCAN_OPTION: --${{ github.event.inputs.scan-mode }}=${{ github.event.inputs.scan-context }}
