@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UnsafeController {
     @RequestMapping("/vulnerable-path")
     public String VulnerablePath(EvalBean evalBean){
-        
         return "Hello, I'm a vulnerability : " + evalBean;
     }
 }
