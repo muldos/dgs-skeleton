@@ -71,7 +71,7 @@ jobs:
           distribution: 'corretto'        
           cache: 'maven'
       - name: Setup JFrog CLI
-        uses: jfrog/setup-jfrog-cli@v2
+        uses: jfrog/setup-jfrog-cli@v3
         env:
           JF_ENV_1: ${{ secrets[format('JF_SECRET_ENV_{0}', github.event.inputs.env-number)] }}
       - name: Set up QEMU
