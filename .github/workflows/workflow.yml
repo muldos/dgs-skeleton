@@ -35,10 +35,10 @@ on:
         required: true
         type: choice
         options:
+        - 'demo'
         - 'vuln'
         - 'hotfix'
         - 'fixed'
-        - 'demo'
         description: "Environment to use (1 EKS / 2 SaaS / 3 Soleng / 4 Webinar)"        
       scan-mode:
         required: true
