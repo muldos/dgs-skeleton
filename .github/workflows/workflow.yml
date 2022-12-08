@@ -31,6 +31,15 @@ on:
         type: string
         default: "dro-backend-docker-dev-virtual"
         description: "Docker virtual repository"
+      img-prefix:
+        required: true
+        type: choice
+        options:
+        - 'vuln'
+        - 'hotfix'
+        - 'fixed'
+        - 'demo'
+        description: "Environment to use (1 EKS / 2 SaaS / 3 Soleng / 4 Webinar)"        
       scan-mode:
         required: true
         type: choice
@@ -142,7 +151,7 @@ jobs:
           build-args: |
             JAR_FILE_NAME=dgs-skeleton-${{ env.PKG_VERSION }}.jar
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
-          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.PKG_VERSION }}
+          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.docker-repo }}-dgs:${{ env.PKG_VERSION }}
       - name: Run Maven WAR build 
         env:
           MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
@@ -178,7 +187,7 @@ jobs:
           build-args: |
             WAR_FILE_NAME=dgs-skeleton-webapp-${{ env.PKG_VERSION }}.war
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
-          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql-tomcat:${{ env.PKG_VERSION }}
+          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}
           
       - name: Scan & push Docker build info
         env:
@@ -187,8 +196,8 @@ jobs:
           RT_DOCKER_HOST: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
           RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
         run: |
-          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql:${{ env.PKG_VERSION }}@${{ steps.docker_build_1.outputs.ImageID }} > ./image-file-details-1.txt
-          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/dgs-graphql-tomcat:${{ env.PKG_VERSION }}@${{ steps.docker_build_2.outputs.ImageID }} > ./image-file-details-2.txt
+          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/${{ github.event.inputs.img-prefix }}-dgs:${{ env.PKG_VERSION }}:${{ env.PKG_VERSION }}@${{ steps.docker_build_1.outputs.ImageID }} > ./image-file-details-1.txt
+          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}@${{ steps.docker_build_2.outputs.ImageID }} > ./image-file-details-2.txt
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           # collect vcs info
@@ -202,5 +211,5 @@ jobs:
           # Xray build scan example
           jf bs --fail=${{ github.event.inputs.fail-scan2 }} ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Tag release with extra properties
-          jf rt sp "drobundle.status=ok;drobundle.version=1.${{ env.JFROG_CLI_BUILD_NUMBER }}" --spec tagspecs.json --spec-vars="dockerRepo=${{ github.event.inputs.docker-repo }};imgPrefix=multiarch/dgs-graphql-tomcat;buildName=${{ env.JFROG_CLI_BUILD_NAME }}-docker;buildNumber=${{ env.JFROG_CLI_BUILD_NUMBER }}"
+          jf rt sp "drobundle.status=ok;drobundle.version=1.${{ env.JFROG_CLI_BUILD_NUMBER }}" --spec tagspecs.json --spec-vars="dockerRepo=${{ github.event.inputs.docker-repo }};imgPrefix=multiarch/${{ github.event.inputs.img-prefix }}-dgs;buildName=${{ env.JFROG_CLI_BUILD_NAME }}-docker;buildNumber=${{ env.JFROG_CLI_BUILD_NUMBER }}"
 
