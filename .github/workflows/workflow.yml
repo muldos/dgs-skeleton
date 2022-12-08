@@ -151,7 +151,7 @@ jobs:
           build-args: |
             JAR_FILE_NAME=dgs-skeleton-${{ env.PKG_VERSION }}.jar
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
-          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.docker-repo }}-dgs:${{ env.PKG_VERSION }}
+          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputsimg-prefix }}-dgs:${{ env.PKG_VERSION }}
       - name: Run Maven WAR build 
         env:
           MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
@@ -196,7 +196,7 @@ jobs:
           RT_DOCKER_HOST: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
           RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
         run: |
-          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/${{ github.event.inputs.img-prefix }}-dgs:${{ env.PKG_VERSION }}@${{ steps.docker_build_1.outputs.ImageID }} > ./image-file-details-1.txt
+          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs:${{ env.PKG_VERSION }}@${{ steps.docker_build_1.outputs.ImageID }} > ./image-file-details-1.txt
           echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}@${{ steps.docker_build_2.outputs.ImageID }} > ./image-file-details-2.txt
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
