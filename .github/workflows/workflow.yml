@@ -39,7 +39,7 @@ on:
         - 'vuln'
         - 'hotfix'
         - 'fixed'
-        description: "Environment to use (1 EKS / 2 SaaS / 3 Soleng / 4 Webinar)"        
+        description: "Image prefix to ease demo"        
       scan-mode:
         required: true
         type: choice
