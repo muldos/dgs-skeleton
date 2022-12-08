@@ -151,7 +151,7 @@ jobs:
           build-args: |
             JAR_FILE_NAME=dgs-skeleton-${{ env.PKG_VERSION }}.jar
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
-          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputsimg-prefix }}-dgs:${{ env.PKG_VERSION }}
+          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs:${{ env.PKG_VERSION }}
       - name: Run Maven WAR build 
         env:
           MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
