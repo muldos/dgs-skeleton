@@ -211,7 +211,7 @@ jobs:
           jf rt bdc ${{ github.event.inputs.docker-repo }} --image-file ./image-file-details-2.txt --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
-      - name: Push Docker build info
+      - name: Scan Docker build info
         env:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
