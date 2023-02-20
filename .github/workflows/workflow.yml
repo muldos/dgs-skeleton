@@ -10,7 +10,7 @@ on:
         - '2'
         - '3'
         - '4'
-        description: "Environment to use (1 EKS / 2 SaaS / 3 Soleng / 4 Webinar)"
+        description: "Environment to use (1 EKS / 2 SaaS / 3 Soleng / 4 JAS Self hosted)"
       fail-scan1:
         required: true
         type: boolean
