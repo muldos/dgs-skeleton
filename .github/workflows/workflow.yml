@@ -92,6 +92,7 @@ jobs:
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           echo '== mvn config =='
+          jf c s 
           jf rt curl /api/security/users/davidro
           jf mvnc --repo-resolve-releases=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
