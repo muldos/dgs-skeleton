@@ -26,5 +26,5 @@ jobs:
         run: |
           echo '== rt config =='
           jf c s 
-          jf rt curl /artifactory/api/system/info
+          jf rt curl /api/system/info
          
