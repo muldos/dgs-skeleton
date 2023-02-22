@@ -26,5 +26,5 @@ jobs:
         run: |
           echo '== rt config =='
           jf c s 
-          jf rt curl /api/security/users/${{ env.CURRENT_LOGIN_NAME }}
+          jf rt curl /artifactory/api/system/info
          
