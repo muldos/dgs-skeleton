@@ -27,4 +27,5 @@ jobs:
           echo '== rt config =='
           jf c s 
           jf rt curl /api/system/info
+          jf rt curl /api/repositories?type=local
          
