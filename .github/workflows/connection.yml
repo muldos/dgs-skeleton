@@ -1,0 +1,30 @@
+name: "github-connection-tool"
+on: 
+  workflow_dispatch:
+    inputs:
+      env-number:
+        required: true
+        type: choice
+        options:
+        - '1'
+        - '2'
+        - '3'
+        - '4'
+        description: "Environment to use (1 EKS / 2 SaaS / 3 Soleng / 4 JAS Self hosted)"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v3
+        env:
+          JF_ENV_1: ${{ secrets[format('JF_SECRET_ENV_{0}', github.event.inputs.env-number)] }}
+          CURRENT_LOGIN_NAME: ${{ secrets[format('JF_LOGIN_{0}', github.event.inputs.env-number)] }}
+      - name: Run connectivity tests 
+        run: |
+          echo '== rt config =='
+          jf c s 
+          jf rt curl /api/security/users/${{ env.CURRENT_LOGIN_NAME }}
+         
