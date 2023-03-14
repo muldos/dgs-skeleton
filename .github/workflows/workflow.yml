@@ -10,7 +10,7 @@ on:
         - '2'
         - '3'
         - '4'
-        description: "Environment to use (1 EKS / 2 SaaS / 3 Soleng / 4 Webinar)"
+        description: "Environment to use (1 EKS / 2 SaaS / 3 Soleng / 4 JAS Self hosted)"
       fail-scan1:
         required: true
         type: boolean
@@ -110,7 +110,7 @@ jobs:
         run: |          
           echo 'running xray on demand scan'
           # Xray on demand scan example
-          jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }}
+          jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }} ${{ env.SCAN_OPTION }}
       - name: Publish JAR & Build Info 
         env:
           SCAN_OPTION: --${{ github.event.inputs.scan-mode }}=${{ github.event.inputs.scan-context }}
@@ -146,6 +146,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
+          provenance: false
           outputs: |
             type=image
           build-args: |
@@ -158,6 +159,7 @@ jobs:
           RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
           PKG_TYPE: war
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
         run: |
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-war ${{ env.JFROG_CLI_BUILD_NUMBER }} 
@@ -181,6 +183,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           file: ./DockerfileTomcat
+          provenance: false
           push: true
           outputs: |
             type=image
@@ -189,7 +192,7 @@ jobs:
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
           tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}
           
-      - name: Scan & push Docker build info
+      - name: Push Docker build info
         env:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
@@ -208,8 +211,15 @@ jobs:
           jf rt bdc ${{ github.event.inputs.docker-repo }} --image-file ./image-file-details-2.txt --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
+      - name: Scan Docker build info
+        env:
+          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
+          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
+          RT_DOCKER_HOST: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
+          RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
+        run: |
           # Xray build scan example
           jf bs --fail=${{ github.event.inputs.fail-scan2 }} ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Tag release with extra properties
-          jf rt sp "drobundle.status=ok;drobundle.version=1.${{ env.JFROG_CLI_BUILD_NUMBER }}" --spec tagspecs.json --spec-vars="dockerRepo=${{ github.event.inputs.docker-repo }};imgPrefix=multiarch/${{ github.event.inputs.img-prefix }}-dgs;buildName=${{ env.JFROG_CLI_BUILD_NAME }}-docker;buildNumber=${{ env.JFROG_CLI_BUILD_NUMBER }}"
+          jf rt sp "drobundle.status=ok;drobundle.version=1.${{ env.JFROG_CLI_BUILD_NUMBER }};drotoken=${{ secrets.GITHUB_TOKEN }}" --spec tagspecs.json --spec-vars="dockerRepo=${{ github.event.inputs.docker-repo }};imgPrefix=multiarch/${{ github.event.inputs.img-prefix }}-dgs;buildName=${{ env.JFROG_CLI_BUILD_NAME }}-docker;buildNumber=${{ env.JFROG_CLI_BUILD_NUMBER }}"
 
