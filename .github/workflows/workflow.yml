@@ -89,6 +89,8 @@ jobs:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
         run: |
+          # display Maven version 
+          jf mvn --version
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           echo '== mvn config =='
