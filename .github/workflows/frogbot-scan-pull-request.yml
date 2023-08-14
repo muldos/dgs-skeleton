@@ -22,6 +22,11 @@ jobs:
         with:
           java-version: "11"
           distribution: "temurin"
+          cache: 'maven'
+        run: |
+          echo 'flattening the POM before frogbot run'
+          mvn -Drevision=1.0.0 -Dmaven.test.skip=true -f pom.xml flatten:flatten
+          mv .flattened-pom.xml pom.xml
 
       - uses: jfrog/frogbot@v2
         env:
