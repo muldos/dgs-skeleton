@@ -23,6 +23,8 @@ jobs:
           java-version: "11"
           distribution: "temurin"
           cache: 'maven'
+        run: |
+          mvn dependency:purge-local-repository
 
       - uses: jfrog/frogbot@v2
         env:
