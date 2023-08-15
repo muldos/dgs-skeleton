@@ -23,9 +23,9 @@ jobs:
           java-version: "11"
           distribution: "temurin"
           cache: 'maven'
+      - name: clean deps cache  
         run: |
           mvn dependency:purge-local-repository
-
       - uses: jfrog/frogbot@v2
         env:
           MAVEN_OPTS: '-Drevision=1.0.0'
