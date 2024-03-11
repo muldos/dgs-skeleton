@@ -5,6 +5,7 @@ on:
 permissions:
   pull-requests: write
   contents: read
+  security-events: write
 jobs:
   scan-pull-request:
     runs-on: ubuntu-latest
