@@ -102,7 +102,6 @@ jobs:
         env: 
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
-          RT_REPO_PREFIX: ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/
         uses: docker/build-push-action@v6
         id: docker_build
         with:
@@ -112,14 +111,12 @@ jobs:
           push: true
           build-args: |
             WAR_FILE_NAME=dgs-skeleton-webapp-${{ env.PKG_VERSION }}.war
-            RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
-          tags: ${{ secrets[format('JF_HOST_3', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}
+          tags: ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/graphql-dgs-tcat:${{ env.PKG_VERSION }}
           
       - name: Push Docker build info
         env:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
-          RT_REPO_PREFIX: ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/
         run: |
           echo ${{ secrets[format('JF_HOST_3', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.digest }} > ./image-metadata.json
           # Collect environment variables for the build
