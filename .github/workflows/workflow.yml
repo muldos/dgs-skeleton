@@ -2,15 +2,6 @@ name: "github-dgs-build"
 on: 
   workflow_dispatch:
     inputs:
-      env-number:
-        required: true
-        type: choice
-        options:
-        - '1'
-        - '2'
-        - '3'
-        - '4'
-        description: "Environment to use (1 EKS / 2 SaaS / 3 Soleng / 4 JAS Self hosted)"
       fail-scan1:
         required: true
         type: boolean
@@ -31,15 +22,6 @@ on:
         type: string
         default: "dro-backend-docker-dev-virtual"
         description: "Docker virtual repository"
-      img-prefix:
-        required: true
-        type: choice
-        options:
-        - 'demo'
-        - 'vuln'
-        - 'hotfix'
-        - 'fixed'
-        description: "Image prefix to ease demo"        
       scan-mode:
         required: true
         type: choice
@@ -63,7 +45,7 @@ jobs:
     # Here we install all the tools : docker buildx, QEMU, JDK 11, JFrog CLI
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
@@ -71,99 +53,28 @@ jobs:
           distribution: 'corretto'        
           cache: 'maven'
       - name: Setup JFrog CLI
-        uses: jfrog/setup-jfrog-cli@v3
-        env:
-          JF_ENV_1: ${{ secrets[format('JF_SECRET_ENV_{0}', github.event.inputs.env-number)] }}
+          id: setup-cli
+          uses: jfrog/setup-jfrog-cli@v4
+          env:
+            JF_URL: https://${{ vars.JF_HOST }}/
+            JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
+          with:
+              oidc-provider-name: davidro-github-integration
+              oidc-audience: davidro-github
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: "linux/amd64,linux/arm64"
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        # We build & test the JAR file, scan it and if scan result ok, we publish it to our artifactory maven repository
-      - name: Run Maven JAR build 
-        env:
-          SCAN_OPTION: --${{ github.event.inputs.scan-mode }}=${{ github.event.inputs.scan-context }}
-          MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
-          RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
-          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
-          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
-        run: |
+        uses: docker/setup-qemu-action@v3
 
-          # Collect environment variables for the build
-          jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }} 
-          echo '== mvn config =='
-          jf mvnc --repo-resolve-releases=${{ env.MVN_VIRTUAL_REPO }} \
-            --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
-            --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
-            --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
-          # display Maven version 
-          jf mvn --version          
-          echo '== maven jar build =='
-          jf mvn --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} -Dmaven.test.skip=true clean package
-          # collect vcs info
-          jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
-      - name: Xray on-demand scan of JAR 
-        env:
-          SCAN_OPTION: --${{ github.event.inputs.scan-mode }}=${{ github.event.inputs.scan-context }}
-          MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
-          RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
-          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
-          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
-        run: |          
-          echo 'running xray on demand scan'
-          # Xray on demand scan example
-          jf scan ./target/dgs-skeleton-${{ env.PKG_VERSION }}.jar --fail=${{ github.event.inputs.fail-scan1 }} ${{ env.SCAN_OPTION }}
-      - name: Publish JAR & Build Info 
-        env:
-          SCAN_OPTION: --${{ github.event.inputs.scan-mode }}=${{ github.event.inputs.scan-context }}
-          MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
-          RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
-          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
-          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
-        run: |          
-          # if scan is ok publish the jar
-          jf mvn -Dmaven.test.skip=true -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-jar --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
-          # Publish build info
-          echo '== publish maven artifacts build infos =='
-          jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-jar ${{ env.JFROG_CLI_BUILD_NUMBER }}
-         
-      # Now multi arch docker build for our maven application
-      # JFrog docker multi arch resources : 
-      # https://jfrog.com/blog/the-more-the-merrier-multi-arch-docker-manifests-with-buildx-and-artifactory/
-      # https://jfrog.com/knowledge-base/artifactory-how-to-use-jfrog-cli-to-add-build-info-to-images-built-with-docker-buildx/
-      - name: Login to Artifactory Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
-          username: ${{ secrets[format('JF_LOGIN_{0}', github.event.inputs.env-number)] }}
-          password: ${{ secrets[format('JF_PWD_{0}', github.event.inputs.env-number)] }}
-      - name: Build and push docker SpringBoot's jar based docker images
-        env: 
-          PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
-          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
-          RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
-        uses: docker/build-push-action@v3
-        id: docker_build_1
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          provenance: false
-          outputs: |
-            type=image
-          build-args: |
-            JAR_FILE_NAME=dgs-skeleton-${{ env.PKG_VERSION }}.jar
-            RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
-          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs:${{ env.PKG_VERSION }}
-      - name: Run Maven WAR build 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        # We build & test the WAR file, scan it and if scan result ok, we publish it to our artifactory maven repository
+      - name: Run Maven build 
         env:
           MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
           RT_DOCKER_REGISTRY: ${{ github.event.inputs.docker-repo }}
           PKG_TYPE: war
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
-          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
-        run: |
+          JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
+          run: |
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-war ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           jf mvnc --repo-resolve-releases=${{ env.MVN_VIRTUAL_REPO }} \
@@ -171,55 +82,54 @@ jobs:
             --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
             --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-war ${{ env.JFROG_CLI_BUILD_NUMBER }} 
-          jf mvn -f pom-war.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true clean package
-          jf mvn -f pom-war.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-war --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
+          jf mvn -f pom.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true clean package
+          jf mvn -f pom.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true --build-name=${{ env.JFROG_CLI_BUILD_NAME }}-war --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-war ${{ env.JFROG_CLI_BUILD_NUMBER }}
+      - name: Authenticate Docker
+          uses: docker/login-action@v3
+          with:
+            registry: ${{ vars.JF_HOST }}
+            username: ${{ steps.setup-cli.outputs.oidc-user }}
+            password: ${{ steps.setup-cli.outputs.oidc-token }}      
       - name: Build and push docker tomcat + war based docker images
         env: 
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
-          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
-          RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
-        uses: docker/build-push-action@v3
-        id: docker_build_2
+          JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
+          RT_REPO_PREFIX: ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/
+        uses: docker/build-push-action@v6
+        id: docker_build
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          file: ./DockerfileTomcat
-          provenance: false
+          provenance: true
           push: true
-          outputs: |
-            type=image
           build-args: |
             WAR_FILE_NAME=dgs-skeleton-webapp-${{ env.PKG_VERSION }}.war
             RT_REPO_PREFIX=${{ env.RT_REPO_PREFIX }}
-          tags: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}
+          tags: ${{ secrets[format('JF_HOST_3', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}
           
       - name: Push Docker build info
         env:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
-          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
-          RT_DOCKER_HOST: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
-          RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
+          JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
+          RT_REPO_PREFIX: ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/
         run: |
-          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs:${{ env.PKG_VERSION }}@${{ steps.docker_build_1.outputs.ImageID }} > ./image-file-details-1.txt
-          echo ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}@${{ steps.docker_build_2.outputs.ImageID }} > ./image-file-details-2.txt
+          echo ${{ secrets[format('JF_HOST_3', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.digest }} > ./image-metadata.json
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           # collect vcs info
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # As the docker images have been built by buildx, we don't have them locally, 
           # so we link the build info to the already published images in previous steps
-          jf rt bdc ${{ github.event.inputs.docker-repo }} --image-file ./image-file-details-1.txt --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
-          jf rt bdc ${{ github.event.inputs.docker-repo }} --image-file ./image-file-details-2.txt --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          jf rt bdc ${{ github.event.inputs.docker-repo }} --image-file ./image-metadata.json --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
       - name: Scan Docker build info
         env:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
-          RT_DOCKER_HOST: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}
-          RT_REPO_PREFIX: ${{ secrets[format('JF_HOST_{0}', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/
+          RT_REPO_PREFIX: ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/
         run: |
           # Xray build scan example
           jf bs --fail=${{ github.event.inputs.fail-scan2 }} ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}

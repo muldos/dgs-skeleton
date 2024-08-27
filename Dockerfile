@@ -1,12 +1,8 @@
-ARG RT_REPO_PREFIX
-FROM adoptopenjdk:11-jre-hotspot
+FROM tomcat:9.0.60-jdk11-openjdk
 
-RUN mkdir /opt/app
-RUN mkdir /var/db_data
+ARG WAR_FILE_NAME
+ADD target/${WAR_FILE_NAME} /usr/local/tomcat/webapps/jfrog-demo.war
 RUN mkdir /app/
 ADD fake-creds.txt /app/top.keys_api.cfg
-ARG JAR_FILE_NAME
-ADD target/${JAR_FILE_NAME} /opt/app/japp.jar
-EXPOSE 8080 8443
-
-ENTRYPOINT ["java", "-jar", "/opt/app/japp.jar"]
+EXPOSE 8080
+CMD ["catalina.sh", "run"]

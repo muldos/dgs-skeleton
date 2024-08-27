@@ -8,8 +8,8 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>fr.davidrobin</groupId>
-	<artifactId>dgs-skeleton</artifactId>
-	<packaging>jar</packaging>
+	<artifactId>dgs-skeleton-webapp</artifactId>
+	<packaging>war</packaging>
 	<version>${revision}</version>
 	<name>DGS GraphQL Skeleton</name>
 	<description>Skeleton project for Netflix DGS</description>
@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope> 
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -49,7 +49,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
-				<version>1.5.0</version>
+				<!--<version>1.3.0</version>-->
 				<configuration>
 				</configuration>
 				<executions>
@@ -70,7 +70,7 @@
 					</goals>
 				  </execution>
 				</executions>
-			  </plugin>
+			  </plugin>			
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
