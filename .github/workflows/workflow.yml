@@ -118,7 +118,7 @@ jobs:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
         run: |
-          echo ${{ secrets[format('JF_HOST_3', github.event.inputs.env-number)] }}/${{ github.event.inputs.docker-repo }}/multiarch/${{ github.event.inputs.img-prefix }}-dgs-tcat:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.digest }} > ./image-metadata.json
+          echo ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/graphql-dgs-tcat:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.digest }} > ./image-metadata.json
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           # collect vcs info
