@@ -1,17 +1,9 @@
 name: "github-dgs-build"
 on: 
+  schedule:
+    - cron: "0 0 * * *"  
   workflow_dispatch:
     inputs:
-      fail-scan1:
-        required: true
-        type: boolean
-        default: false
-        description: "If true, will fail the build if watches violations are found during mvn scan"
-      fail-scan2:
-        required: true
-        type: boolean
-        default: false
-        description: "If true, will fail the build if watches violations are found during build scan"
       maven-repo:
         required: true
         type: string
@@ -131,11 +123,11 @@ jobs:
       - name: Scan Docker build info
         env:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
-          JFROG_CLI_BUILD_PROJECT: ${{ github.event.inputs.project-key }}
+          JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
           RT_REPO_PREFIX: ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/
         run: |
           # Xray build scan example
-          jf bs --fail=${{ github.event.inputs.fail-scan2 }} ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          jf bs --fail=false ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Tag release with extra properties
           jf rt sp "drobundle.status=ok;drobundle.version=1.${{ env.JFROG_CLI_BUILD_NUMBER }};drotoken=${{ secrets.GITHUB_TOKEN }}" --spec tagspecs.json --spec-vars="dockerRepo=${{ github.event.inputs.docker-repo }};imgPrefix=multiarch/${{ github.event.inputs.img-prefix }}-dgs;buildName=${{ env.JFROG_CLI_BUILD_NAME }}-docker;buildNumber=${{ env.JFROG_CLI_BUILD_NUMBER }}"
 
