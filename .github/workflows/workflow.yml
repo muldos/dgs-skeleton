@@ -74,7 +74,7 @@ jobs:
           PKG_TYPE: war
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
-          run: |
+        run: |
             # Collect environment variables for the build
             jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-war ${{ env.JFROG_CLI_BUILD_NUMBER }} 
             jf mvnc --repo-resolve-releases=${{ env.MVN_VIRTUAL_REPO }} \
