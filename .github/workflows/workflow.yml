@@ -9,11 +9,6 @@ on:
         type: string
         default: "dro-backend-maven-virtual"
         description: "Maven virtual repository"
-      docker-repo:
-        required: true
-        type: string
-        default: "dro-backend-docker-dev-virtual"
-        description: "Docker virtual repository"
 jobs:
   build:
     runs-on: ubuntu-latest
