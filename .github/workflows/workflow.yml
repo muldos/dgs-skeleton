@@ -95,14 +95,13 @@ jobs:
           jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # As the docker images have been built by buildx, we don't have them locally, 
           # so we link the build info to the already published images in previous steps
-          jf rt bdc /${{ env.DOCKER_REPO }} --image-file ./image-metadata.json --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          jf rt bdc ${{ env.DOCKER_REPO }} --image-file ./image-metadata.json --build-name ${{ env.JFROG_CLI_BUILD_NAME }}-docker --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
       - name: Scan Docker build info
         env:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
-          RT_REPO_PREFIX: ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/
         run: |
           # Xray build scan example
           jf bs --fail=false ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }}
