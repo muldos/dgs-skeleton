@@ -104,6 +104,4 @@ jobs:
         run: |
           # Xray build scan example
           #jf bs --fail=false ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
-          # Tag release with extra properties
-          jf rt sp "drobundle.status=ok;drobundle.version=1.${{ env.JFROG_CLI_BUILD_NUMBER }} --spec tagspecs.json --spec-vars="dockerRepo=/${{ env.DOCKER_REPO }};imgPrefix=/${{ env.IMAGE_NAME }};buildName=${{ env.JFROG_CLI_BUILD_NAME }};buildNumber=${{ env.JFROG_CLI_BUILD_NUMBER }}"
 
