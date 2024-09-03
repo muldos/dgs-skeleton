@@ -97,11 +97,11 @@ jobs:
           jf rt bdc ${{ env.DOCKER_REPO }} --image-file ./image-metadata.json --build-name ${{ env.JFROG_CLI_BUILD_NAME }} --build-number ${{ env.JFROG_CLI_BUILD_NUMBER }}
           # Publish build info
           jf rt bp ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
-      - name: Scan Docker build info
+      - name: Scan the build (Server side)
         env:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
         run: |
           # Xray build scan example
-          #jf bs --fail=false ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
+          jf bs --fail=false ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
 
