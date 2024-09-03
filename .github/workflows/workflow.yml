@@ -17,6 +17,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_REPO: 'dro-oci-dev-local'
+      IMAGE_NAME: 'graphql-dgs-tcat'
     permissions:
       id-token: write
       contents: read
@@ -84,14 +87,13 @@ jobs:
           push: true
           build-args: |
             WAR_FILE_NAME=dgs-skeleton-webapp-${{ env.PKG_VERSION }}.war
-          tags: ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/graphql-dgs-tcat:${{ env.PKG_VERSION }}
-          
+          tags: ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
       - name: Push Docker build info
         env:
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
         run: |
-          echo ${{ vars.JF_HOST }}/${{ github.event.inputs.docker-repo }}/graphql-dgs-tcat:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.digest }} > ./image-metadata.json
+          echo ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}@${{ steps.docker_build.outputs.digest }} > ./image-metadata.json
           # Collect environment variables for the build
           jf rt bce ${{ env.JFROG_CLI_BUILD_NAME }}-docker ${{ env.JFROG_CLI_BUILD_NUMBER }} 
           # collect vcs info
