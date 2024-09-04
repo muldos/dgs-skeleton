@@ -37,6 +37,9 @@ jobs:
           # The GitHub token automatically generated for the job
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JF_DEPS_REPO: "dro-backend-maven-virtual"
+          # these parameters are better suited for demos, in real life, bith are often set to false
+          JF_INCLUDE_ALL_VULNERABILITIES: "TRUE"
+          JF_GIT_AGGREGATE_FIXES: "TRUE"
           # [Optional, default: "TRUE"]
           # Fails the Frogbot task if any security issue is found.
           JF_FAIL: "FALSE"
