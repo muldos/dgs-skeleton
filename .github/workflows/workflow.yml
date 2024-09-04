@@ -3,18 +3,13 @@ on:
   schedule:
     - cron: "0 0 * * *"  
   workflow_dispatch:
-    inputs:
-      maven-repo:
-        required: true
-        type: string
-        default: "dro-backend-maven-virtual"
-        description: "Maven virtual repository"
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       DOCKER_REPO: 'dro-oci-dev-local'
       IMAGE_NAME: 'graphql-dgs-tcat'
+      MVN_VIRTUAL_REPO: 'dro-backend-maven-virtual'
     permissions:
       id-token: write
       contents: read
@@ -48,7 +43,6 @@ jobs:
         # We build & test the WAR file, scan it and if scan result ok, we publish it to our artifactory maven repository
       - name: Run Maven build 
         env:
-          MVN_VIRTUAL_REPO: ${{ github.event.inputs.maven-repo }}
           PKG_VERSION: 1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0
           JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
         run: |
@@ -58,8 +52,9 @@ jobs:
               --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
               --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
               --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
-            jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }} 
+            jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
             jf mvn -f pom.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true clean package
+            jf audit --mvn
             jf mvn -f pom.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true --build-name=${{ env.JFROG_CLI_BUILD_NAME }} --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
             
       - name: Authenticate Docker
