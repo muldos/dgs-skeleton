@@ -98,7 +98,8 @@ jobs:
           JF_PROJECT: ${{ vars.JF_PROJECT_KEY }}
         run: |
           # Xray build scan example
-          jf bs --fail=false ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
           docker pull ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
           jf docker scan ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
+          jf bs --fail=false ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
+
 
