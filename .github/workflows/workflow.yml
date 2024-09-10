@@ -52,6 +52,7 @@ jobs:
               --repo-deploy-releases=${{ env.MVN_VIRTUAL_REPO }} \
               --repo-resolve-snapshots=${{ env.MVN_VIRTUAL_REPO }} \
               --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
+            jf curation-audit
             jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
             jf mvn -f pom.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true clean package
             jf audit --mvn
@@ -99,7 +100,7 @@ jobs:
         run: |
           # Xray build scan example
           docker pull ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
-          jf docker scan --vuln ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }}
+          jf docker scan ${{ vars.JF_HOST }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME}}:${{ env.PKG_VERSION }} --severity='HIGH,CRITICAL' --vuln
           jf bs --fail=false --vuln ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
 
 
