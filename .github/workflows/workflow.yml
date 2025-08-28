@@ -9,7 +9,7 @@ jobs:
     env:
       DOCKER_REPO: 'dro-oci-dev-local'
       IMAGE_NAME: 'graphql-dgs-tcat'
-      MVN_VIRTUAL_REPO: 'dro-backend-maven-virtual'
+      MVN_VIRTUAL_REPO: 'dro-maven-virtual'
     permissions:
       id-token: write
       contents: read
