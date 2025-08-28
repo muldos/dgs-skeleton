@@ -54,9 +54,9 @@ jobs:
               --repo-deploy-snapshots=${{ env.MVN_VIRTUAL_REPO }}
             jf curation-audit
             jf rt bag ${{ env.JFROG_CLI_BUILD_NAME }} ${{ env.JFROG_CLI_BUILD_NUMBER }}
-            jf mvn -f pom.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true clean package
+            jf mvn -f pom.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true clean package deploy
             jf audit --mvn
-            jf mvn -f pom.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true --build-name=${{ env.JFROG_CLI_BUILD_NAME }} --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
+            #jf mvn -f pom.xml -Drevision=1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0 -Dmaven.test.skip=true --build-name=${{ env.JFROG_CLI_BUILD_NAME }} --build-number=${{ env.JFROG_CLI_BUILD_NUMBER }} deploy
             jf scan --vuln ./target/dgs-skeleton-webapp-1.${{ env.JFROG_CLI_BUILD_NUMBER }}.0.war
       - name: Authenticate Docker
         uses: docker/login-action@v3
