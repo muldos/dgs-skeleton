@@ -37,8 +37,8 @@ export MVN_VIRTUAL_REPO=dro-backend-maven-virtual
 jf mvnc --repo-resolve-releases=$MVN_VIRTUAL_REPO --repo-deploy-releases=$MVN_VIRTUAL_REPO --repo-resolve-snapshots=$MVN_VIRTUAL_REPO  --repo-deploy-snapshots=$MVN_VIRTUAL_REPO
 jf mvn -Drevision=$PKG_VERSION -Dmaven.test.skip=true -f pom.xml clean package deploy
 cp ./target/dgs-skeleton-webapp-$PKG_VERSION.$PKG_TYPE ./target/jfrog-demo.war
-docker build --build-arg WAR_FILE_NAME=jfrog-demo.war -f DockerfileTomcat -t dgs-graphql-tomcat:latest .
-docker run -p 8080:8080 -v $PWD/src/main/resources/data:/var/db_data -d --name graphql-demo dgs-graphql-tomcat:latest
+docker build --build-arg WAR_FILE_NAME=jfrog-demo.war -f Dockerfile -t dgs-graphql-tomcat:latest .
+docker run -p 8080:8080 --name graphql-demo dgs-graphql-tomcat:latest
 ```
 
 Then browse to http://localhost:8080/jfrog-demo/graphiql
